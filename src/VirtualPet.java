@@ -4,18 +4,17 @@ public class VirtualPet {
 
     public static TimerTask task;
     static Timer timer = new Timer();
-    static String name = "";
     static int hungerLvl = 0; //0 is starting point, not hungry. 5 is end point, and very hungry!!
-    static boolean isHungry = false;
-    static int feedMe = 2;
     static int thirstLvl = 0;
-    static int waterMe = 1;
-    static boolean isThirsty = false;
-    static boolean waste = false;
     static int wasteLvl = 0;
     static int boredomLvl = 0; //0 is not thirsty. 5 is very thirsty!!
-    static int playWithMe = 2;
+    static boolean isHungry = false;
+    static boolean isThirsty = false;
     static boolean isBored = false;
+    static int feedMe = 2;
+    static int waterMe = 1;
+    static int playWithMe = 2;
+    static boolean waste = false;
     static boolean sickness = false;
     
     public VirtualPet(boolean eat, boolean drink, boolean needBathroom, boolean wantToPlay, boolean sickness) {
@@ -43,14 +42,14 @@ public class VirtualPet {
 
     public static boolean timeToEat(int hungerLvl) {
         if(getHungerLvl() == 1){
-            isHungry = true;
             System.out.println("looks like your pet is hungry! Hunger level is: " + hungerLvl);
-        } else if(getHungerLvl() > 1 && getHungerLvl() < 4)  {
-            isHungry = true;
+            return isHungry = true;
+        } else if(getHungerLvl() > 1 && getHungerLvl() <= 4)  {
             System.out.println("Your pet is starving!! Hunger level is: " + hungerLvl);
+            return isHungry = true;
         } else if (getHungerLvl() == 5){
-            isHungry = false;
             System.out.println("Your pet is dead. You didn't feed it in time, sorry.. Hunger level is: " + hungerLvl);
+            return isHungry = false;
         } else {
             System.out.println("Looks like your pet isn't hungry");
         }
@@ -62,7 +61,7 @@ public class VirtualPet {
         if(getThirstLvl() == 1){
             isThirsty = true;
             System.out.println("looks like your pet is thirsty! Thirst level is: " + thirstLvl);
-        } else if(getThirstLvl() > 1 && getThirstLvl() < 4)  {
+        } else if(getThirstLvl() > 1 && getThirstLvl() <= 4)  {
             isThirsty = true;
             System.out.println("Your pet is very thirsty!! Thirst level is: " + thirstLvl);
         } else if (getThirstLvl() == 5){
@@ -79,7 +78,7 @@ public class VirtualPet {
         if(getBoredLvl() == 1){
             isBored = true;
             System.out.println("Looks like your pet is bored! Boredom level is: " + boredomLvl);
-        } else if(getBoredLvl() > 1 && getBoredLvl() < 4)  {
+        } else if(getBoredLvl() > 1 && getBoredLvl() <= 4)  {
             isBored = true;
             System.out.println("Your pet is so bored it's reading!! Boredom level is: " + boredomLvl);
         } else if (getBoredLvl() == 5){
@@ -92,7 +91,7 @@ public class VirtualPet {
     }
 
     public static boolean timeToPotty(int wasteLvl) {
-        if(!timeToEat(hungerLvl) && !timeToPlay(boredomLvl) && getPottyLvl() > 3){
+        if(getPottyLvl() >= 3){
             waste = true;
             System.out.println("Oh, it looks like your pet is ready to use the bathroom!");
         } else if(getPottyLvl() == 5) {
@@ -106,9 +105,10 @@ public class VirtualPet {
     }
 
     public static int eat(){
-        if(timeToEat(hungerLvl)){
+        if(isHungry){
             hungerLvl -= feedMe;
             wasteLvl += hungerLvl;
+            System.out.println("Pero is very thankful for the food!");
         } else {
             hungerLvl = hungerLvl;
         }
@@ -116,9 +116,10 @@ public class VirtualPet {
     }
 
     public static int drink(){
-        if(timeToDrink(thirstLvl)){
+        if(isThirsty){
             thirstLvl -= waterMe;
             wasteLvl += thirstLvl;
+            System.out.println("Pero is very thankful for the water!");
         } else {
             thirstLvl = thirstLvl;
         }
@@ -126,9 +127,10 @@ public class VirtualPet {
     }
 
     public static int play(){
-        if(timeToPlay(boredomLvl)){
+        if(isBored){
             boredomLvl -= playWithMe;
             playWithMe += thirstLvl;
+            System.out.println("Pero loves to play! He asks to be petted after playing");
         } else {
             boredomLvl = boredomLvl;
         }
@@ -138,6 +140,7 @@ public class VirtualPet {
     public static int potty(){
         if(timeToPotty(wasteLvl)){
             wasteLvl -= wasteLvl;
+            System.out.println("Pero looks very relieved after using the potty!");
         } else {
             wasteLvl = wasteLvl;
         }
@@ -147,7 +150,7 @@ public class VirtualPet {
     public static void tick(){
         task = new TimerTask(){
             public void run(){
-                for(int i = 0; i > 4; i++){
+                for(int i = 0; i < 1; i++){
                     hungerLvl++;
                     thirstLvl++;
                     boredomLvl++;
@@ -155,11 +158,12 @@ public class VirtualPet {
                     if(getThirstLvl() == 5 || getHungerLvl() == 5 || getBoredLvl() == 5 || getPottyLvl() == 5){
                         this.cancel();
                         System.out.println("Game over! See you next time!");
+                        System.exit(0);
                     }
                 }
             };
         };
 
-        timer.scheduleAtFixedRate(task, 1000, (1000 * 60) * 5);
+        timer.scheduleAtFixedRate(task, 120000, (1000 * 60) * 4);
     }
 }
